@@ -3,7 +3,7 @@ name: Run tests and upload coverage
 on: 
   push:
     branches: [ main ]
-    paths: [ '**.java', 'pom.xml', '.github/workflows/**' ]
+    paths: [ '**/*.java', 'pom.xml', '.github/workflows/**' ]
   pull_request:
     branches: [ main ]
 
@@ -18,22 +18,32 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
-      - name: Build with Maven
-        run: mvn -B clean verify
+      - name: Build and run tests with Maven
+        run: mvn clean verify org.jacoco:jacoco-maven-plugin:prepare-agent install org.jacoco:jacoco-maven-plugin:report
+
+      - name: Check for JaCoCo report existence
+        run: |
+          if [ ! -f "target/site/jacoco/jacoco.csv" ]; then
+            echo "JaCoCo report not found!"
+            exit 1
+          fi
 
       - name: Generate JaCoCo Badge and Summary
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
         with:
           badges-directory: badges
+          jacoco-csv-file: target/site/jacoco/jacoco.csv
           generate-branches-badge: true
+          generate-coverage-badge: true
           generate-summary: true
+          on-missing-report: fail
 
       - name: Log coverage summary to workflow output
         run: |
