@@ -36,6 +36,12 @@
   <build>
     <finalName>web-app-jacoco</finalName>
      <plugins>
+     
+     <plugin>
+            <groupId>com.atlassian.maven.plugins</groupId>
+            <artifactId>maven-amps-plugin</artifactId>
+            <version>8.1.0</version> <!-- New version -->
+        </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
